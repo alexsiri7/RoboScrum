@@ -1,0 +1,23 @@
+RoboScrum
+
+RoboScrum is a set of metrics and a small Excel spreadsheet to kickstart a Scrum team. The huge minds at Rapid Scrum (Jeff Sutherland and Scott Downey, http://rapidscrum.com/RoboScrum/index.php) created this set of metrics to be able to find easily where the team currently is, and which are the areas to improve. 
+
+The RoboScrum spreadsheet has a lot of metrics and information that is not present in this application, so if you didn't see that one, I recommend you to do so. This application is just the basic setup to get everything running (and in a Linux server, as the spreadsheet does not work correctly on OpenOffice).
+
+======================================================
+
+REQUIREMENTS
+
+Just Django. In ubuntu, you can just install it using apt-get install python-django.
+
+INSTALATION
+
+- You will need a database. You can create one on your DBMS, and then copy the settings.py-dummy to settings.py, and configure it to be able to access the DB. 
+- Run "python manage.py syncdb" to install the database. 
+
+USE IT!
+To run it, go to the main folder of the app, and run python manage.py runserver. Then navigate to http://localhost:8000/admin to update the sprint information, or to http://localhost:8000/scrum to see the cool graphs. 
+
+Enjoy your scrumming!
+
+Alex - www.lexitconsulting.com
