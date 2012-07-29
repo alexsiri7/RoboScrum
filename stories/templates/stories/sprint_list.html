@@ -1,9 +1,45 @@
+
+<html>
+  <head>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type='text/javascript'>
+      google.load('visualization', '1', {packages:['gauge', 'corechart']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+
+        var data_burndown = google.visualization.arrayToDataTable([
+          ['Sprint', 'TVI', 'Initial', 'Independent', 'Hyper-productive'],
+{% for sprint, tvi in TVI %}
+          ['Sprint {{sprint}}',  {{tvi}}, 100, 250, 500],
+{% endfor %}
+        ]);
+
+        var options_burndown = {
+          title: 'Targeted Value Increase',
+          width: 800, height: 300,
+          colors: ["blue", "red", "yellow", "green"],
+	  	  vAxis: {minValue: 0},
+	  	  series: [{lineWidth: 4}, {lineWidth: 1}, {lineWidth: 1}, {lineWidth: 1}]
+        };
+
+        var chart_burndown = new google.visualization.LineChart(document.getElementById('tvi_div'));
+        chart_burndown.draw(data_burndown, options_burndown);
+
+
+      }
+    </script>
+  </head>
+  <body>
+  <h1>Sprints</h1>
 {% if sprint_list %}
     <ul>
     {% for sprint in sprint_list %}
-        <li><a href="sprint/{{ sprint.id }}/">{{ sprint.start_date }}</a></li>
+        <li><a href="sprint/{{ sprint.id }}/">Sprint {{ sprint.number }}, starting {{ sprint.start_date }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
     <p>No sprints are available.</p>
 {% endif %}
+    <div id='tvi_div'></div>
+  </body>
+</html>

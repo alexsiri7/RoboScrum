@@ -29,7 +29,7 @@
 
         var data_burndown = google.visualization.arrayToDataTable([
           ['Day', 'Optimal', 'Maximal', 'Minimal', 'Points'],
-{% for i, optimal, maximal, minimal, points in sprint.burndown %}
+{% for i, optimal, maximal, minimal, points in burndown %}
           ['{{i}}',  {{optimal}}, {{maximal}}, {{minimal}}, {{points}}],
 {% endfor %}
         ]);
@@ -49,6 +49,7 @@
     </script>
   </head>
   <body>
+<a href="/scrum">Back to Sprints</a>
 <h1>Sprint {{ sprint.number }}</h1>
 <ul>
 <li>Original Commitment: {{ sprint.original_commitment }}</li>
