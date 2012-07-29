@@ -1,0 +1,9 @@
+{% if sprint_list %}
+    <ul>
+    {% for sprint in sprint_list %}
+        <li><a href="sprint/{{ sprint.id }}/">{{ sprint.start_date }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No sprints are available.</p>
+{% endif %}

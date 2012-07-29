@@ -1,0 +1,75 @@
+
+<html>
+  <head>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type='text/javascript'>
+      google.load('visualization', '1', {packages:['gauge', 'corechart']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Focus Factor', {{ sprint.focus_factor }}],
+          ['Adopted Work', {{ sprint.adopted_work }}],
+          ['Found Work', {{ sprint.found_work }}],
+          ['Accuracy of Estimation', {{ sprint.accuracy_of_estimation }}],
+          ['Accuracy of Commit', {{ sprint.accuracy_of_commit }}]
+        ]);
+
+        var options = {
+          width: 800, height: 120,
+          redFrom: 90, redTo: 100,
+          yellowFrom:0, yellowTo: 70,
+          greenFrom:70, greenTo: 90,
+          minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('metrics_div'));
+        chart.draw(data, options);
+
+
+        var data_burndown = google.visualization.arrayToDataTable([
+          ['Day', 'Optimal', 'Maximal', 'Minimal', 'Points'],
+{% for i, optimal, maximal, minimal, points in sprint.burndown %}
+          ['{{i}}',  {{optimal}}, {{maximal}}, {{minimal}}, {{points}}],
+{% endfor %}
+        ]);
+
+        var options_burndown = {
+          title: 'Burndown',
+          width: 800, height: 300,
+          colors: ["green", "red", "red", "blue"],
+	  vAxis: {minValue: 0}
+        };
+
+        var chart_burndown = new google.visualization.LineChart(document.getElementById('burndown_div'));
+        chart_burndown.draw(data_burndown, options_burndown);
+
+
+      }
+    </script>
+  </head>
+  <body>
+<h1>Sprint {{ sprint.number }}</h1>
+<ul>
+<li>Original Commitment: {{ sprint.original_commitment }}</li>
+
+<li>Total Commitment: {{ sprint.total_commitment }}</li>
+
+<li>Velocity: {{ sprint.velocity }}</li>
+<li>Work Capacity: {{ sprint.work_capacity }}</li>
+<li>targeted_value_increase: {{ sprint.targeted_value_increase }}%</li>
+
+
+</ul>
+<ul>
+{% for story in sprint.story_set.all %}
+    <li>{{ story.title }}</li>
+{% endfor %}
+</ul>
+    <div id='metrics_div'></div>
+    <div id='burndown_div'></div>
+  </body>
+</html>
+
+
+
