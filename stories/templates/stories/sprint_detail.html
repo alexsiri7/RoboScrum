@@ -6,11 +6,10 @@
       google.load('visualization', '1', {packages:['gauge', 'corechart']});
       google.setOnLoadCallback(drawChart);
       function drawChart() {
+{%if sprint.isFinished %}
         var data = google.visualization.arrayToDataTable([
           ['Label', 'Value'],
           ['Focus Factor', {{ sprint.focus_factor }}],
-          ['Adopted Work', {{ sprint.adopted_work }}],
-          ['Found Work', {{ sprint.found_work }}],
           ['Accuracy of Estimation', {{ sprint.accuracy_of_estimation }}],
           ['Accuracy of Commit', {{ sprint.accuracy_of_commit }}]
         ]);
@@ -22,17 +21,23 @@
           greenFrom:70, greenTo: 90,
           minorTicks: 5
         };
-
         var chart = new google.visualization.Gauge(document.getElementById('metrics_div'));
         chart.draw(data, options);
 
-
         var data_burndown = google.visualization.arrayToDataTable([
           ['Day', 'Optimal', 'Maximal', 'Minimal', 'Points'],
-{% for i, optimal, maximal, minimal, points in burndown %}
-          ['{{i}}',  {{optimal}}, {{maximal}}, {{minimal}}, {{points}}],
-{% endfor %}
+	{% for i, optimal, maximal, minimal, points in burndown %}
+		  ['{{i}}',  {{optimal}}, {{maximal}}, {{minimal}}, {{points}}],
+	{% endfor %}
         ]);
+{%else%}
+        var data_burndown = google.visualization.arrayToDataTable([
+          ['Day', 'Optimal', 'Maximal', 'Minimal'],
+	{% for i, optimal, maximal, minimal, points in burndown %}
+		  ['{{i}}',  {{optimal}}, {{maximal}}, {{minimal}}],
+	{% endfor %}
+        ]);
+{%endif%}
 
         var options_burndown = {
           title: 'Burndown',
@@ -62,15 +67,23 @@
 
 
 </ul>
-<ul>
-{% for story in sprint.story_set.all %}
-    <li>{{ story.title }}</li>
-{% endfor %}
-</ul>
     <div id='metrics_div'></div>
     <div id='burndown_div'></div>
+<table style="width:700px" cellpadding="0">
+    <tr><th>Story</th><th>Estimation</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Completed</th>
+{% for story in sprint.story_set.all %}
+    <tr><td>{{ story.title }}</td><td>{{ story.estimation }}</td>
+	<td> <input size="5" /> </td><td> <input size="5" /> </td><td> <input size="5" /> </td><td> <input size="5" /> </td><td> <input size="5" /></td>
+	<td><input size="5" /></td></tr>
+{% endfor %}
+</table>
+<style>
+table {
+padding: 0
+}
+table td{
+	border-bottom: 1px solid black
+}
+</style>
   </body>
 </html>
-
-
-
