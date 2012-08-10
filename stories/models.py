@@ -9,6 +9,7 @@ class Sprint(models.Model):
     def first_sprint(cls):
       return Sprint.objects.order_by('number')[0]
     number = models.IntegerField()
+    is_finished = models.BooleanField()
     start_date = models.DateTimeField('date started')
     def __unicode__(self):
       return unicode(self.number)
@@ -49,12 +50,12 @@ class Sprint(models.Model):
     def targeted_value_increase(self):
       return self.velocity()*100/Sprint.original_velocity()
     def estimate_delta(self):
-      points = self.story_set.filter(planned=False).aggregate(totalWork=Sum('work_done'), totalCommitment=Sum('estimation'))
+      points = self.story_set.filter(planned=True).aggregate(totalWork=Sum('work_done'), totalCommitment=Sum('estimation'))
       return abs(points["totalWork"]-points["totalCommitment"])
     def accuracy_of_estimation(self):
         return 100-(self.estimate_delta()*100/self.total_commitment())
     def accuracy_of_commit(self):
-        return self.original_commitment()*100/self.work_capacity()
+        return 100-abs(self.work_capacity()-self.original_commitment())*100/self.work_capacity()
 
 class Story(models.Model):
     sprint = models.ForeignKey(Sprint)

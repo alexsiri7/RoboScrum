@@ -6,7 +6,7 @@
       google.load('visualization', '1', {packages:['gauge', 'corechart']});
       google.setOnLoadCallback(drawChart);
       function drawChart() {
-{%if sprint.isFinished %}
+{%if sprint.is_finished %}
         var data = google.visualization.arrayToDataTable([
           ['Label', 'Value'],
           ['Focus Factor', {{ sprint.focus_factor }}],
@@ -69,6 +69,7 @@
 </ul>
     <div id='metrics_div'></div>
     <div id='burndown_div'></div>
+{%if not sprint.is_finished %}
 <table style="width:700px" cellpadding="0">
     <tr><th>Story</th><th>Estimation</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Completed</th>
 {% for story in sprint.story_set.all %}
@@ -85,5 +86,6 @@ table td{
 	border-bottom: 1px solid black
 }
 </style>
+{% endif %}
   </body>
 </html>
