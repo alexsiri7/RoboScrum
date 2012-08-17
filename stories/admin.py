@@ -8,7 +8,7 @@ class StoryInline(admin.TabularInline):
 
 class SprintAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None,               {'fields': ['number', 'start_date', 'is_finished']}),
+        (None,               {'fields': ['number', 'start_date', 'is_finished', 'member_dedication']}),
     ]
     inlines = [StoryInline]
     list_display = ('number', 'start_date' )

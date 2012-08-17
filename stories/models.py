@@ -4,15 +4,18 @@ from django.db.models import Sum
 class Sprint(models.Model):
     @classmethod
     def original_velocity(cls):
-      return cls.first_sprint().velocity()
+      return cls.first_sprint().relative_velocity()
     @classmethod
     def first_sprint(cls):
       return Sprint.objects.order_by('number')[0]
     number = models.IntegerField()
+    member_dedication = models.IntegerField()
     is_finished = models.BooleanField()
     start_date = models.DateTimeField('date started')
     def __unicode__(self):
       return unicode(self.number)
+    def relative_velocity(self):
+      return self.velocity()*100/self.member_dedication
     def velocity(self):
       return self.story_set.filter(finished=True).filter(planned=True).aggregate(velocity=Sum('estimation'))["velocity"]
     def work_capacity(self):
@@ -21,7 +24,7 @@ class Sprint(models.Model):
       tot = 0
       burnup = []
       vel_map = self.day_velocity_map()
-      for e in range(6):
+      for e in range(5):
         tot += vel_map.get(e, 0)
         burnup.append( tot)
       return burnup
@@ -48,7 +51,7 @@ class Sprint(models.Model):
     def found_work(self):
       return self.found_points()*100/self.original_commitment()
     def targeted_value_increase(self):
-      return self.velocity()*100/Sprint.original_velocity()
+      return self.relative_velocity()*100/Sprint.original_velocity()
     def estimate_delta(self):
       points = self.story_set.filter(planned=True).aggregate(totalWork=Sum('work_done'), totalCommitment=Sum('estimation'))
       return abs(points["totalWork"]-points["totalCommitment"])

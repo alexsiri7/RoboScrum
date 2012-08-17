@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 
 class SprintView(DetailView):
-    days = ["Start", "Mon", "Tue", "Wed", "Thu", "Fri"]
+    days = ["Mon", "Tue", "Wed", "Thu", "Fri"]
     model = Sprint
 
     def get_context_data(self, **kwargs):
@@ -14,7 +14,7 @@ class SprintView(DetailView):
         return context
     def burndown(self):
       total = self.object.original_commitment()
-      burn = map(lambda (i,e): (self.days[i], total-total*i/5, total*1.2-total*i/5*1.2, total*0.8-total*i/5*0.8,total-e),enumerate(self.object.burnup()))
+      burn = map(lambda (i,e): (self.days[i], total-total*i/4, total*1.2-total*i/4*1.2, total*0.8-total*i/4*0.8,total-e),enumerate(self.object.burnup()))
       return burn
 
 
@@ -25,4 +25,4 @@ class SprintListView(ListView):
         context['TVI'] = self.getTVI()
         return context
     def getTVI(self):
-        return map(lambda s: (s.number, s.targeted_value_increase()), self.object_list.order_by('start_date').all())
+        return map(lambda s: (s.number, s.targeted_value_increase()), self.object_list.order_by('start_date').filter(is_finished=True).all())
