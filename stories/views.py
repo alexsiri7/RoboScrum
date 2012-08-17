@@ -10,11 +10,23 @@ class SprintView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(SprintView, self).get_context_data(**kwargs)
-        context['burndown'] = self.burndown()
+	if self.object.is_finished:
+	        context['burndown'] = self.burndown()
+	else:
+		context['burndown_schema'] = self.burndown_schema()
         return context
     def burndown(self):
       total = self.object.original_commitment()
       burn = map(lambda (i,e): (self.days[i], total-total*i/4, total*1.2-total*i/4*1.2, total*0.8-total*i/4*0.8,total-e),enumerate(self.object.burnup()))
+      return burn
+    def burndown_schema(self):
+      total = self.object.original_commitment()
+      burn = map(lambda (i,e): (
+		self.days[i], 
+		total-total*i/4, 
+		total*1.2-total*i/4*1.2, 
+		total*0.8-total*i/4*0.8)
+	     ,enumerate(range(5)))
       return burn
 
 

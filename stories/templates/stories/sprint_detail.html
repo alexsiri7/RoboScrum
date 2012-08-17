@@ -33,7 +33,7 @@
 {%else%}
         var data_burndown = google.visualization.arrayToDataTable([
           ['Day', 'Optimal', 'Maximal', 'Minimal'],
-	{% for i, optimal, maximal, minimal, points in burndown %}
+	{% for i, optimal, maximal, minimal, points in burndown_schema %}
 		  ['{{i}}',  {{optimal}}, {{maximal}}, {{minimal}}],
 	{% endfor %}
         ]);

@@ -38,7 +38,8 @@ class Sprint(models.Model):
     def total_commitment(self):
       return self.story_set.aggregate(totalCommitment=Sum('estimation'))["totalCommitment"]
     def original_commitment(self):
-      return self.story_set.filter(planned=True).aggregate(totalCommitment=Sum('estimation'))["totalCommitment"]
+      total= self.story_set.filter(planned=True).aggregate(totalCommitment=Sum('estimation'))["totalCommitment"]
+      return total if total is not None else 0
     def adopted_commitment(self):
       return self.story_set.filter(planned=False).aggregate(totalCommitment=Sum('estimation'))["totalCommitment"]
     def focus_factor(self):
