@@ -54,8 +54,11 @@ class Sprint(models.Model):
     def targeted_value_increase(self):
       return self.relative_velocity()*100/Sprint.original_velocity()
     def estimate_delta(self):
-      points = self.story_set.filter(planned=True).aggregate(totalWork=Sum('work_done'), totalCommitment=Sum('estimation'))
-      return abs(points["totalWork"]-points["totalCommitment"])
+      stories = self.story_set.filter(planned=True)
+      diff = 0
+      for s in stories:
+        diff = diff + abs(s.work_done - s.estimation)
+      return diff
     def accuracy_of_estimation(self):
         return 100-(self.estimate_delta()*100/self.total_commitment())
     def accuracy_of_commit(self):
