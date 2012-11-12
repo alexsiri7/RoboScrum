@@ -14,6 +14,8 @@ class Sprint(models.Model):
     start_date = models.DateTimeField('date started')
     def __unicode__(self):
       return unicode(self.number)
+    def stories(self):
+      return self.story_set.order_by('-planned').all()
     def relative_velocity(self):
       return self.velocity()*100/self.member_dedication
     def velocity(self):
@@ -54,7 +56,7 @@ class Sprint(models.Model):
     def targeted_value_increase(self):
       return self.relative_velocity()*100/Sprint.original_velocity()
     def estimate_delta(self):
-      stories = self.story_set.filter(planned=True)
+      stories = self.story_set.filter(planned=True, finished=True)
       diff = 0
       for s in stories:
         diff = diff + abs(s.work_done - s.estimation)
@@ -72,3 +74,5 @@ class Story(models.Model):
     work_done = models.IntegerField()
     finished = models.BooleanField()
     finished_day = models.IntegerField()
+    def is_win(self):
+       return self.finished and self.planned and abs(self.estimation-self.work_done)<3 or (abs(self.estimation-self.work_done)/min(self.estimation,self.work_done)<0.2 if min(self.estimation,self.work_done)>0 else False)

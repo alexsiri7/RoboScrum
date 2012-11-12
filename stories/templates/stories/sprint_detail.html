@@ -1,4 +1,3 @@
-
 <html>
   <head>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
@@ -25,9 +24,9 @@
         chart.draw(data, options);
 
         var data_burndown = google.visualization.arrayToDataTable([
-          ['Day', 'Optimal', 'Maximal', 'Minimal', 'Points'],
+          ['Day', 'Points'],
 	{% for i, optimal, maximal, minimal, points in burndown %}
-		  ['{{i}}',  {{optimal}}, {{maximal}}, {{minimal}}, {{points}}],
+		  ['{{i}}',  {{points}}],
 	{% endfor %}
         ]);
 {%else%}
@@ -41,7 +40,7 @@
 
         var options_burndown = {
           title: 'Burndown',
-          width: 800, height: 300,
+          width: 800, height: 250,
           colors: ["green", "red", "red", "blue"],
 	  vAxis: {minValue: 0}
         };
@@ -59,26 +58,41 @@
 <ul>
 <li>Original Commitment: {{ sprint.original_commitment }}</li>
 
+{%if sprint.is_finished %}
 <li>Total Commitment: {{ sprint.total_commitment }}</li>
-
 <li>Velocity: {{ sprint.velocity }}</li>
 <li>Work Capacity: {{ sprint.work_capacity }}</li>
 <li>targeted_value_increase: {{ sprint.targeted_value_increase }}%</li>
-
+{% endif %}
 
 </ul>
     <div id='metrics_div'></div>
     <div id='burndown_div'></div>
 {%if not sprint.is_finished %}
 <table style="width:700px" cellpadding="0">
-    <tr><th>Story</th><th>Estimation</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Completed</th>
-{% for story in sprint.story_set.all %}
-    <tr><td>{{ story.title }}</td><td>{{ story.estimation }}</td>
-	<td> <input size="5" /> </td><td> <input size="5" /> </td><td> <input size="5" /> </td><td> <input size="5" /> </td>
+    <tr><th>Story</th><th>Estimation</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Completed</th>
+{% for story in sprint.stories %}
+    <tr><td class="planned_{{ story.planned }}">{{ story.title }}</td><td>{{ story.estimation }}</td>
+	<td> <input size="5" /> </td><td> <input size="5" /> </td><td> <input size="5" /> </td><td> <input size="5" /> </td><td> <input size="5" /> </td>
 	<td><input size="5" /></td></tr>
 {% endfor %}
 </table>
+
+{% else %}
+
+<table style="width:700px" cellpadding="0">
+    <tr><th>Story</th><th>Estimation</th><th>Workdone</th><th>Is Win</th>
+{% for story in sprint.story_set.order.all %}
+    <tr><td class="planned_{{ story.planned }}">{{ story.title }}</td><td>{{ story.estimation }}</td>
+	<td>{{ story.work_done }}</td><td>{{ story.is_win }}</td> </tr>
+{% endfor %}
+</table>
+
+{% endif %}
 <style>
+.planned_True{
+	font-weight: bold;
+}
 table {
 padding: 0
 }
@@ -86,6 +100,6 @@ table td{
 	border-bottom: 1px solid black
 }
 </style>
-{% endif %}
+
   </body>
 </html>

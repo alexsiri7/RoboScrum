@@ -7,24 +7,60 @@
       google.setOnLoadCallback(drawChart);
       function drawChart() {
 
-        var data_burndown = google.visualization.arrayToDataTable([
+        var data_TVI = google.visualization.arrayToDataTable([
           ['Sprint', 'TVI', 'Initial', 'Independent', 'Hyper-productive'],
 {% for sprint, tvi in TVI %}
           ['Sprint {{sprint}}',  {{tvi}}, 100, 250, 500],
 {% endfor %}
         ]);
 
-        var options_burndown = {
+        var options_TVI = {
           title: 'Targeted Value Increase',
           width: 800, height: 300,
-          colors: ["blue", "red", "yellow", "green"],
+          colors: ["blue", "red", "black", "green"],
 	  	  vAxis: {minValue: 0},
 	  	  series: [{lineWidth: 4}, {lineWidth: 1}, {lineWidth: 1}, {lineWidth: 1}]
         };
 
-        var chart_burndown = new google.visualization.LineChart(document.getElementById('tvi_div'));
-        chart_burndown.draw(data_burndown, options_burndown);
+        var chart_TVI = new google.visualization.LineChart(document.getElementById('tvi_div'));
+        chart_TVI.draw(data_TVI, options_TVI);
 
+
+        var data_points = google.visualization.arrayToDataTable([
+          ['Sprint', 'Workcapacity', 'Velocity', 'Commitment'],
+{% for sprint, work_capacity, velocity, commitment in Points %}
+          ['Sprint {{sprint}}',  {{work_capacity}}, {{velocity}}, {{commitment}}],
+{% endfor %}
+        ]);
+
+        var options_points = {
+          title: 'Points (100% dedication team)',
+          width: 800, height: 300,
+          colors: ["blue", "green", "black", "green"],
+	  	  vAxis: {minValue: 0},
+	  	  series: [{lineWidth: 2}, {lineWidth: 4}, {lineWidth: 1}, {lineWidth: 1}]
+        };
+
+        var chart_points = new google.visualization.LineChart(document.getElementById('points_div'));
+        chart_points.draw(data_points, options_points);
+
+        var data_pct = google.visualization.arrayToDataTable([
+          ['Sprint', 'Focus Factor', 'Estimation', 'Commit'],
+{% for sprint, work_capacity, velocity, commitment in Pct %}
+          ['Sprint {{sprint}}',  {{work_capacity}}, {{velocity}}, {{commitment}}],
+{% endfor %}
+        ]);
+
+        var options_pct = {
+          title: '%',
+          width: 800, height: 300,
+          colors: ["blue", "green", "red", "green"],
+	  	  vAxis: {minValue: 0},
+	  	  series: [{lineWidth: 4}, {lineWidth: 1}, {lineWidth: 4}, {lineWidth: 1}]
+        };
+
+        var chart_pct = new google.visualization.LineChart(document.getElementById('pct_div'));
+        chart_pct.draw(data_pct, options_pct);
 
       }
     </script>
@@ -32,14 +68,16 @@
   <body>
   <h1>Sprints</h1>
 {% if sprint_list %}
-    <ul>
+<!--    <ul>
     {% for sprint in sprint_list %}
         <li><a href="sprint/{{ sprint.id }}/">Sprint {{ sprint.number }}, starting {{ sprint.start_date }}</a></li>
     {% endfor %}
-    </ul>
+    </ul> -->
 {% else %}
     <p>No sprints are available.</p>
 {% endif %}
     <div id='tvi_div'></div>
+    <div id='points_div'></div>
+    <div id='pct_div'></div>
   </body>
 </html>
