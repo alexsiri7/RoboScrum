@@ -19,9 +19,11 @@ class Sprint(models.Model):
     def relative_velocity(self):
       return self.velocity()*100/self.member_dedication
     def velocity(self):
-      return self.story_set.filter(finished=True).filter(planned=True).aggregate(velocity=Sum('estimation'))["velocity"]
+      total =  self.story_set.filter(finished=True).filter(planned=True).aggregate(velocity=Sum('estimation'))["velocity"]
+      return total if total is not None else 0
     def work_capacity(self):
-      return self.story_set.aggregate(work_capacity=Sum('work_done'))["work_capacity"]
+      total = self.story_set.aggregate(work_capacity=Sum('work_done'))["work_capacity"]
+      return total if total is not None else 0
     def burnup(self):
       tot = 0
       burnup = []
@@ -38,14 +40,16 @@ class Sprint(models.Model):
         ret[i["finished_day"]] = i["velocity"]
       return ret
     def total_commitment(self):
-      return self.story_set.aggregate(totalCommitment=Sum('estimation'))["totalCommitment"]
+      total = self.story_set.aggregate(totalCommitment=Sum('estimation'))["totalCommitment"]
+      return total if total is not None else 0
     def original_commitment(self):
       total= self.story_set.filter(planned=True).aggregate(totalCommitment=Sum('estimation'))["totalCommitment"]
       return total if total is not None else 0
     def adopted_commitment(self):
       return self.story_set.filter(planned=False).aggregate(totalCommitment=Sum('estimation'))["totalCommitment"]
     def focus_factor(self):
-      return self.velocity()*100/self.work_capacity()
+      wc = self.work_capacity()
+      return self.velocity()*100/self.work_capacity() if wc > 0 else 0
     def adopted_work(self):
       return self.adopted_commitment()*100/self.original_commitment()
     def found_points(self):
@@ -69,10 +73,10 @@ class Sprint(models.Model):
 class Story(models.Model):
     sprint = models.ForeignKey(Sprint)
     title = models.CharField(max_length=200)
-    planned = models.BooleanField()
+    planned = models.BooleanField(default=True)
     estimation = models.IntegerField()
-    work_done = models.IntegerField()
-    finished = models.BooleanField()
-    finished_day = models.IntegerField()
+    work_done = models.IntegerField(default=0)
+    finished = models.BooleanField(default=False)
+    finished_day = models.IntegerField(default=0)
     def is_win(self):
        return self.finished and self.planned and abs(self.estimation-self.work_done)<3 or (abs(self.estimation-self.work_done)/min(self.estimation,self.work_done)<0.2 if min(self.estimation,self.work_done)>0 else False)
